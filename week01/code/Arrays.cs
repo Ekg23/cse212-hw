@@ -13,7 +13,19 @@ public static class Arrays
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
 
-        return []; // replace this return statement with your own
+        // Step 1: Create an array of doubles with the specified length to hold the multiples.
+        // Step 2: Use a loop to calculate the multiples of the number and store them in the array.
+        // Step 3: Return the completed array of multiples.
+
+
+        double[] result = new double[length]; // create an array of the specified length to hold the multiples
+        for (int i = 0; i < length; i++)
+        {
+            result[i] = number * (i + 1); // calculate the multiple and store it in the array
+
+        }
+
+        return result; // return the completed array of multiples
     }
 
     /// <summary>
@@ -29,5 +41,22 @@ public static class Arrays
         // Remember: Using comments in your program, write down your process for solving this problem
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
+
+        // Step 1: Determine the number of elements in the list to ensure the rotation amount is valid.
+        // Step 2: Use a loop to perform the rotation by moving the last element to
+        //         the front of the list and removing it from the end, repeating this process for the specified amount.
+        // Step 3: The list will be modified in place, so no return value is needed.
+        // Step 4: Ensure that the amount is within the bounds of the list size to prevent unnecessary rotations.
+
+        int count = data.Count; // get the number of elements in the list
+        amount = amount % count; // ensure the amount is within the bounds of the list size
+
+        // Perform the rotation
+        for (int i = 0; i < amount; i++)
+        {
+            data.Insert(0, data[data.Count - 1]); // Move the last element to the front
+            data.RemoveAt(data.Count - 1); // Remove the last element
+        }
+        
     }
 }
