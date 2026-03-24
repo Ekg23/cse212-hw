@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 public static class SetsAndMaps
@@ -22,7 +23,19 @@ public static class SetsAndMaps
     public static string[] FindPairs(string[] words)
     {
         // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        var wordSet = new HashSet<string>(words);
+        var pairs = new List<string>();
+        foreach (var word in words.ToList())
+        {
+            var reversed = new string(word.Reverse().ToArray());
+            if (wordSet.Contains(reversed) && word != reversed)
+            {
+                pairs.Add($"{word} & {reversed}");
+                wordSet.Remove(word);
+                wordSet.Remove(reversed);
+            }
+        }
+        return pairs.ToArray();
     }
 
     /// <summary>
@@ -43,6 +56,15 @@ public static class SetsAndMaps
         {
             var fields = line.Split(",");
             // TODO Problem 2 - ADD YOUR CODE HERE
+            var degree = fields[3].Trim();
+            if (degrees.ContainsKey(degree))
+            {
+                degrees[degree]++;
+            }
+            else
+            {
+                degrees[degree] = 1;
+            }
         }
 
         return degrees;
@@ -67,7 +89,37 @@ public static class SetsAndMaps
     public static bool IsAnagram(string word1, string word2)
     {
         // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        if (word1.Length != word2.Length)
+            return false;
+
+        var charCount = new Dictionary<char, int>();
+        foreach (var c in word1.ToLower().Where(c => !char.IsWhiteSpace(c)))
+        {
+            if (charCount.ContainsKey(c))
+            {
+                charCount[c]++;
+            }
+            else
+            {
+                charCount[c] = 1;
+            }
+        }
+        foreach (var c in word2.ToLower().Where(c => !char.IsWhiteSpace(c)))
+        {
+            if (charCount.ContainsKey(c))
+            {
+                charCount[c]--;
+                if (charCount[c] < 0)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     /// <summary>
@@ -96,11 +148,44 @@ public static class SetsAndMaps
 
         var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
 
-        // TODO Problem 5:
-        // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
-        // on those classes so that the call to Deserialize above works properly.
-        // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
-        // 3. Return an array of these string descriptions.
-        return [];
+        var results = new List<string>();
+        if (featureCollection?.Features != null)
+        {
+            foreach (var feature in featureCollection.Features)
+            {
+                var mag = feature.Properties?.Mag;
+                var place = feature.Properties?.Place;
+                if (mag.HasValue && !string.IsNullOrEmpty(place))
+                {
+                    results.Add($"{place} - Mag {mag.Value}");
+                }
+            }
+        }
+        return results.ToArray();
     }
+
+    // TODO Problem 5:
+    // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
+    // on those classes so that the call to Deserialize above works properly.
+    // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
+    // 3. Return an array of these string descriptions.
+    
+
+    // Classes for JSON deserialization
+    public class FeatureCollection
+    {
+        public List<Feature> Features { get; set; }
+    }
+
+    public class Feature
+    {
+        public Properties Properties { get; set; }
+    }
+
+    public class Properties
+    {
+        public string Place { get; set; }
+        public double? Mag { get; set; } // Use nullable for mag
+    }
+
 }
